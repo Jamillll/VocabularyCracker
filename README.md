@@ -3,6 +3,11 @@ A key logger that tracks how often you use words, letting you sort it and filter
 
 This project is split into two main parts, the first of which is "VCCore". This will be a background process that, similarly to a key logger, will track and register key presses and use that data to track what words you use. From there VCCore will record that data and store it. This is where the second part of Vocabulary Cracker comes in, that being internally named "VCApp". This is a seperate program that will retrieve the data and display it. On top of that VCApp allows you to configure VCCore in how it functions. 
 
+## Current TODO
+- Abstract logging
+- Log periodically
+- Log a word once and then add to an integar value on how much its used, as opposed to logging the same word every time its used
+
 ## Base level features
 Base level features are features that Vocabulary Cracker needs to contain to meet its first milestone. These features alone won't make it ready for a version 1 release but they are a large step. Of course, having these features by no means make this project complete, we still need to impliment the CRUD options and ideally all of the advanced features but having these base level features are a large step in the process.
 
@@ -35,6 +40,7 @@ Advanced features are features that can be added at any point after the base rel
 - Test speeds of saving data to file on disc, if too slow use multithreading to create a keylogging thread and a saving threat
 - Research into and apply optimisation for comparing dictionary and interpretted words
 - Add logging of what and how many words were typed daily
+- Change Logging to binary files as apposed to txt files
 
 ### VCApp:
 - Calculate a Vocab score based on used word length and measure it on a scale of basic to smart to pretentious
