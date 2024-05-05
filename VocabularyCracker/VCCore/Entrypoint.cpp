@@ -28,18 +28,25 @@ int main()
 			{
 				key = (char)i;
 
-				if (key >= 65 && key <= 90)
-				{
-					key += 32;
-				}
-
 				switch (key)
 				{
+				case ' ':
+					buffer += key;
+					break; 
+
 				case VK_BACK:
-					buffer.resize(buffer.size() - 2);
+					if (buffer.length() > 0)
+					{
+						buffer.pop_back();
+					}
+					break;
 
 				default:
-					buffer += key;
+					if (key >= 65 && key <= 90)
+					{
+						buffer += key + 32;
+					}
+					break;
 				}
 				
 				system("cls");
@@ -66,8 +73,9 @@ int main()
 			if (words[i] == buffer)
 			{
 				confirmedWords.push_back(words[i]);
-				buffer.clear();
+				break;
 			}
 		}
+		buffer.clear();
 	}
 }
