@@ -8,6 +8,7 @@ int main()
 {
 	std::cout << "Hello world from VCCore" << std::endl;
 
+	std::vector<std::string> confirmedWords;
 	std::vector<std::string> words;
 	std::string buffer;
 	char key;
@@ -47,13 +48,25 @@ int main()
 		}
 
 		system("cls");
-		std::cout << buffer;
+		std::cout << buffer << std::endl;
+		std::cout << "Confirmed words: ";
+
+		for (size_t i = 0; i < confirmedWords.size(); i++)
+		{
+			std::cout << confirmedWords[i] << ", ";
+		}
+
+		if (buffer.length() <= 0) continue;
+		else if (buffer[buffer.size() - 1] != ' ') continue;
+		
+		buffer.pop_back();
 
 		for (size_t i = 0; i < words.size(); i++)
 		{
 			if (words[i] == buffer)
 			{
-				std::cout << "it worked" << std::endl;
+				confirmedWords.push_back(words[i]);
+				buffer.clear();
 			}
 		}
 	}
