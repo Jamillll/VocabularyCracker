@@ -6,7 +6,6 @@ This project is split into two main parts, the first of which is "VCCore". This 
 ## Current TODO
 - Abstract logging
 - Log periodically
-- Log a word once and then add to an integar value on how much its used, as opposed to logging the same word every time its used
 
 ## Base level features
 Base level features are features that Vocabulary Cracker needs to contain to meet its first milestone. These features alone won't make it ready for a version 1 release but they are a large step. Of course, having these features by no means make this project complete, we still need to impliment the CRUD options and ideally all of the advanced features but having these base level features are a large step in the process.
@@ -47,3 +46,6 @@ Advanced features are features that can be added at any point after the base rel
 - Bulk adding words to the dictionary by allowing the app to read from user inputted text files
 - Allow users to be able to also view their daily stats which, after enough time, could show how speech patterns change
 - Allow users to make vocabulary goals, an example being using less swear words or using more long words
+
+## Notes
+Thanks to @dwyl for creating the word list I am using, you can find their github page here https://github.com/dwyl/english-words

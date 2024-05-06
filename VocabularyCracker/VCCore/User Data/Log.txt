@@ -1,29 +1,15 @@
-same
-behaviour
-much
-expected
-try
-again
-i
-think
-it
-fr
-fr
-just
-works
-see
-this
-this
-works
-this
-this
-works
-easy
-it
-just
-to
-make
-sure
-this
-still
-works
+when 1
+well 1
+its 1
+know 1
+not 1
+broken 1
+yet 4
+you 1
+something 2
+just 1
+works 1
+that 2
+is 1
+pretty 3
+cool 1

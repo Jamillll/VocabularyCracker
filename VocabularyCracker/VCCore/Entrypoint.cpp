@@ -3,13 +3,18 @@
 #include <string>
 #include <Windows.h>
 #include <vector>
+#include <unordered_map>
+#include <sstream>
+
 #include "Timer.h"
 
 int main()
 {
 	//std::cout << "Hello world from VCCore" << std::endl;
 
-	std::vector<std::string> confirmedWords;
+	std::unordered_map<std::string, unsigned int> confirmedWords;
+
+	//std::vector<std::string> confirmedWords;
 	std::vector<std::string> words;
 	std::string buffer;
 
@@ -17,7 +22,14 @@ int main()
 	std::ifstream readLog("User Data\\Log.txt");
 	while (std::getline(readLog, input))
 	{
-		confirmedWords.push_back(input);
+		std::stringstream line(input);
+
+		std::string word;
+		std::getline(line, word, ' ');
+		std::string count;
+		std::getline(line, count, ' ');
+
+		confirmedWords[word] = std::stoi(count);
 	}
 	readLog.close();
 
@@ -103,7 +115,7 @@ int main()
 			{
 				if (words[i] == buffer)
 				{
-					confirmedWords.push_back(words[i]);
+					confirmedWords[words[i]]++;
 					break;
 				}
 			}
@@ -113,9 +125,10 @@ int main()
 
 close:
 	std::ofstream writeLog("User Data\\Log.txt");
-	for (size_t i = 0; i < confirmedWords.size(); i++)
+
+	for (auto& word : confirmedWords) 
 	{
-		writeLog << confirmedWords[i] << std::endl;
+		writeLog << word.first << " " << word.second << std::endl;
 	}
 	writeLog.close();
 }
