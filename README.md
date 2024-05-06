@@ -6,6 +6,7 @@ This project is split into two main parts, the first of which is "VCCore". This 
 ## Current TODO
 - Abstract logging
 - Log periodically
+- Check if the buffer matches any of the confirmed words before the rest of the list, people are probably saying words they've already said before
 
 ## Base level features
 Base level features are features that Vocabulary Cracker needs to contain to meet its first milestone. These features alone won't make it ready for a version 1 release but they are a large step. Of course, having these features by no means make this project complete, we still need to impliment the CRUD options and ideally all of the advanced features but having these base level features are a large step in the process.
