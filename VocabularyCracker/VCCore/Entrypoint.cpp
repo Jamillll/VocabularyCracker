@@ -3,79 +3,119 @@
 #include <string>
 #include <Windows.h>
 #include <vector>
+#include "Timer.h"
 
 int main()
 {
-	std::cout << "Hello world from VCCore" << std::endl;
+	//std::cout << "Hello world from VCCore" << std::endl;
 
 	std::vector<std::string> confirmedWords;
 	std::vector<std::string> words;
 	std::string buffer;
-	char key;
 
-	std::fstream wordList("words_alpha.txt");
 	std::string input;
+	std::ifstream readLog("User Data\\Log.txt");
+	while (std::getline(readLog, input))
+	{
+		confirmedWords.push_back(input);
+	}
+	readLog.close();
+
+	input = input.empty();
+	std::fstream wordList("User Data\\words_alpha.txt");
 	while (std::getline(wordList, input))
 	{
 		words.push_back(input);
 	}
+	wordList.close();
 
+	float keyDuration = 0;
+	float dictionaryDuration = 0;
 	while (true)
 	{
-		for (size_t i = 8; i <= 255; i++)
+		//std::cout << keyDuration << std::endl;
+		//std::cout << dictionaryDuration << std::endl << std::endl;
+
 		{
-			if (GetAsyncKeyState(i) == -32767)
+			Timer timer(&keyDuration);
+
+			for (size_t i = 8; i <= 255; i++)
 			{
-				key = (char)i;
-
-				switch (key)
+				if (GetAsyncKeyState(i) == -32767)
 				{
-				case ' ':
-					buffer += key;
-					break; 
+					char key = (char)i;
 
-				case VK_BACK:
-					if (buffer.length() > 0)
+					switch (key)
 					{
-						buffer.pop_back();
-					}
-					break;
+					case VK_F7:
+						goto close;
 
-				default:
-					if (key >= 65 && key <= 90)
-					{
-						buffer += key + 32;
+					case VK_SPACE:
+						buffer += key;
+						break;
+
+					case VK_RETURN:
+						buffer += VK_SPACE;
+						break;
+
+					case VK_BACK:
+						if (buffer.length() > 0)
+						{
+							buffer.pop_back();
+						}
+						break;
+
+					default:
+						if (key >= 65 && key <= 90)
+						{
+							buffer += key + 32;
+						}
+						break;
 					}
-					break;
+
+					//system("cls");
+					//std::cout << buffer;
 				}
-				
-				system("cls");
-				std::cout << buffer;
 			}
 		}
 
-		system("cls");
-		std::cout << buffer << std::endl;
-		std::cout << "Confirmed words: ";
+		//system("cls");
+		//std::cout << buffer << std::endl;
+		//std::cout << "Confirmed words: ";
 
-		for (size_t i = 0; i < confirmedWords.size(); i++)
-		{
-			std::cout << confirmedWords[i] << ", ";
-		}
+		//for (size_t i = 0; i < confirmedWords.size(); i++)
+		//{
+		//	std::cout << confirmedWords[i] << ", ";
+		//}
 
 		if (buffer.length() <= 0) continue;
 		else if (buffer[buffer.size() - 1] != ' ') continue;
 		
 		buffer.pop_back();
 
-		for (size_t i = 0; i < words.size(); i++)
+		// Catches the case that the buffer only had ' ' inside of it which is removed, leaving an empty buffer. 
+		// This would cause it to waste time looping through the whole array, only to find nothing
+		if (buffer.length() <= 0) continue;
+
 		{
-			if (words[i] == buffer)
+			Timer timer(&dictionaryDuration);
+			for (size_t i = 0; i < words.size(); i++)
 			{
-				confirmedWords.push_back(words[i]);
-				break;
+				if (words[i] == buffer)
+				{
+					confirmedWords.push_back(words[i]);
+					break;
+				}
 			}
 		}
 		buffer.clear();
 	}
+
+close:
+	std::ofstream writeLog("User Data\\Log.txt");
+	for (size_t i = 0; i < confirmedWords.size(); i++)
+	{
+		writeLog << confirmedWords[i] << std::endl;
+	}
+	writeLog.close();
 }
