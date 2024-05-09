@@ -8,6 +8,8 @@
 
 #include "Timer.h"
 
+void Save(std::unordered_map<std::string, unsigned int>* confirmedWords);
+
 int main()
 {
 	//std::cout << "Hello world from VCCore" << std::endl;
@@ -43,10 +45,14 @@ int main()
 
 	float keyDuration = 0;
 	float dictionaryDuration = 0;
+	float saveDuration = 0;
+
 	while (true)
 	{
-		//std::cout << keyDuration << std::endl;
-		//std::cout << dictionaryDuration << std::endl << std::endl;
+		std::cout << keyDuration << std::endl;
+		std::cout << dictionaryDuration << std::endl;
+		std::cout << saveDuration << std::endl << std::endl;
+		system("cls");
 
 		{
 			Timer timer(&keyDuration);
@@ -111,6 +117,7 @@ int main()
 
 		{
 			Timer timer(&dictionaryDuration);
+
 			for (size_t i = 0; i < words.size(); i++)
 			{
 				if (words[i] == buffer)
@@ -121,12 +128,22 @@ int main()
 			}
 		}
 		buffer.clear();
+
+		{
+			Timer timer(&saveDuration);
+			Save(&confirmedWords);
+		}
 	}
 
 close:
+	Save(&confirmedWords);
+}
+
+void Save(std::unordered_map<std::string, unsigned int>* confirmedWords)
+{
 	std::ofstream writeLog("User Data\\Log.txt");
 
-	for (auto& word : confirmedWords) 
+	for (auto& word : *confirmedWords)
 	{
 		writeLog << word.first << " " << word.second << std::endl;
 	}
