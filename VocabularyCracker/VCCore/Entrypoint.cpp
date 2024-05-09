@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <Windows.h>
@@ -10,13 +9,10 @@
 
 void Save(std::unordered_map<std::string, unsigned int>* confirmedWords);
 
-int main()
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	//std::cout << "Hello world from VCCore" << std::endl;
-
 	std::unordered_map<std::string, unsigned int> confirmedWords;
 
-	//std::vector<std::string> confirmedWords;
 	std::vector<std::string> words;
 	std::string buffer;
 
@@ -49,10 +45,6 @@ int main()
 
 	while (true)
 	{
-		std::cout << keyDuration << std::endl;
-		std::cout << dictionaryDuration << std::endl;
-		std::cout << saveDuration << std::endl << std::endl;
-		system("cls");
 
 		{
 			Timer timer(&keyDuration);
@@ -90,21 +82,9 @@ int main()
 						}
 						break;
 					}
-
-					//system("cls");
-					//std::cout << buffer;
 				}
 			}
 		}
-
-		//system("cls");
-		//std::cout << buffer << std::endl;
-		//std::cout << "Confirmed words: ";
-
-		//for (size_t i = 0; i < confirmedWords.size(); i++)
-		//{
-		//	std::cout << confirmedWords[i] << ", ";
-		//}
 
 		if (buffer.length() <= 0) continue;
 		else if (buffer[buffer.size() - 1] != ' ') continue;
