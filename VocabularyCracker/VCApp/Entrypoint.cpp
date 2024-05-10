@@ -35,10 +35,14 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_NoUndocking | ImGuiDockNodeFlags_AutoHideTabBar;
+    ImGuiWindowFlags dockWindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    dockWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    dockWindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+    ImGuiWindowFlags basicWindowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
+    basicWindowFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable;
+    basicWindowFlags |= ImGuiWindowFlags_NoCollapse;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -48,23 +52,38 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("Dockspace Demo", nullptr, window_flags);
-        ImGui::PopStyleVar();
-
-        ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f), dockspace_flags);
-
-        ImGui::End();
-
+        
         // Frame content
-        ImGui::Begin("helllo", nullptr, io.ConfigFlags);
-        ImGui::Text("This is text");
-        ImGui::End();
+        // Dockspace Window
+        {
+            ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-        ImGui::ShowDemoWindow();
+            ImGui::Begin("Dockspace Window", nullptr, dockWindowFlags);
+            ImGui::PopStyleVar();
+
+            ImGui::BeginMainMenuBar();
+            ImGui::MenuItem("Hello world");
+            ImGui::EndMainMenuBar();
+
+            ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f), dockspaceFlags);
+            ImGui::End();
+        }
+
+        // SideBar window
+        {
+            ImGui::Begin("SideBar", nullptr, basicWindowFlags);
+            ImGui::Text("This is text");
+            ImGui::End();
+        }
+
+        // Main window
+        {
+            ImGui::Begin("Main", nullptr, basicWindowFlags);
+            ImGui::Text("This is main window text");
+            ImGui::End();
+        }
 
         // Rendering
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
