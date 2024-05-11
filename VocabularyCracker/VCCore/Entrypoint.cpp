@@ -7,9 +7,19 @@
 
 #include "Timer.h"
 
-void Save(std::unordered_map<std::string, unsigned int>* confirmedWords);
+enum CoreState
+{
+	EXIT = -1,
+	RUNNING = 0,
+	PAUSED = 1,
+	UNPAUSED = 2,
+};
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+void Save(std::unordered_map<std::string, unsigned int>* confirmedWords);
+CoreState LogKeys(std::string* bufferHandle);
+
+//int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+int main()
 {
 	std::unordered_map<std::string, unsigned int> confirmedWords;
 
@@ -43,47 +53,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	float dictionaryDuration = 0;
 	float saveDuration = 0;
 
+	bool paused = false;
 	while (true)
 	{
-
+		switch (LogKeys(&buffer))
 		{
-			Timer timer(&keyDuration);
+		case EXIT:
+			goto close;
 
-			for (size_t i = 8; i <= 255; i++)
-			{
-				if (GetAsyncKeyState(i) == -32767)
-				{
-					char key = (char)i;
+		case RUNNING:
+			break;
 
-					switch (key)
-					{
-					case VK_F7:
-						goto close;
+		case PAUSED:
+			paused = true;
+			break;
 
-					case VK_SPACE:
-						buffer += key;
-						break;
+		case UNPAUSED:
+			paused = false;
+			break;
+		}
 
-					case VK_RETURN:
-						buffer += VK_SPACE;
-						break;
-
-					case VK_BACK:
-						if (buffer.length() > 0)
-						{
-							buffer.pop_back();
-						}
-						break;
-
-					default:
-						if (key >= 65 && key <= 90)
-						{
-							buffer += key + 32;
-						}
-						break;
-					}
-				}
-			}
+		if (paused) 
+		{
+			buffer.clear();
+			continue;
 		}
 
 		if (buffer.length() <= 0) continue;
@@ -128,4 +121,51 @@ void Save(std::unordered_map<std::string, unsigned int>* confirmedWords)
 		writeLog << word.first << " " << word.second << std::endl;
 	}
 	writeLog.close();
+}
+
+CoreState LogKeys(std::string* bufferHandle)
+{
+	for (size_t i = 8; i <= 255; i++)
+	{
+		if (GetAsyncKeyState(i) == -32767)
+		{
+			char key = (char)i;
+
+			switch (key)
+			{
+			case VK_SPACE:
+				*bufferHandle += key;
+				break;
+
+			case VK_RETURN:
+				*bufferHandle += VK_SPACE;
+				break;
+
+			case VK_BACK:
+				if (bufferHandle->length() > 0)
+				{
+					bufferHandle->pop_back();
+				}
+				break;
+
+			case VK_F7:
+				return EXIT;
+
+			case VK_F10:
+				return PAUSED;
+
+			case VK_F9:
+				return UNPAUSED;
+
+			default:
+				if (key >= 65 && key <= 90)
+				{
+					*bufferHandle += key + 32;
+				}
+				break;
+			}
+		}
+	}
+
+	return RUNNING;
 }
