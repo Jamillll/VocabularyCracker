@@ -3,6 +3,7 @@
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
+#include <Windows.h>
 
 #include <fstream>
 #include <string>
@@ -10,7 +11,7 @@
 #include <sstream>
 
 // Main code
-int main(int, char**)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     if (!glfwInit())
         return 1;
@@ -26,7 +27,7 @@ int main(int, char**)
     std::unordered_map<std::string, unsigned int> confirmedWords;
 
     std::string input;
-    std::ifstream readLog("C:\\Users\\MJMis\\Downloads\\VocabularyCracker - main\\VocabularyCracker - main\\VocabularyCracker\\VCCore\\User Data\\Log.txt");
+    std::ifstream readLog("C:\\Programs\\VocabularyCracker\\VocabularyCracker\\VCCore\\User Data\\Log.txt");
     while (std::getline(readLog, input))
     {
         std::stringstream line(input);
@@ -107,7 +108,7 @@ int main(int, char**)
 
             for (auto words : confirmedWords)
             {
-                ImGui::Text("%s, &d", words.first, words.second);
+                ImGui::Text("%s, %d", words.first.c_str(), words.second);
             }
 
             ImGui::End();
