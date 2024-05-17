@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     std::unordered_map<std::string, unsigned int> confirmedWords;
 
     std::string input;
-    std::ifstream readLog("C:\\Programs\\VocabularyCracker\\VocabularyCracker\\VCCore\\User Data\\Log.txt");
+    std::ifstream readLog("../VCCore/User Data/Log.txt");
     while (std::getline(readLog, input))
     {
         std::stringstream line(input);
@@ -106,13 +106,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             ImGui::Begin("Main", nullptr, basicWindowFlags);
             ImGui::Text("This is main window text");
 
-            for (auto words : confirmedWords)
-            {
-                ImGui::Text("%s, %d", words.first.c_str(), words.second);
-            }
+            ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
 
+            if (ImGui::BeginTable("word table", 2, flags))
+            {
+                ImGui::TableSetupColumn("Word", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+
+                for (auto words : confirmedWords)
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%s", words.first.c_str());
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", words.second);
+                }
+                ImGui::EndTable();
+            }
             ImGui::End();
         }
+
+        //ImGui::ShowDemoWindow();
 
         // Rendering
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
