@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 #include <sstream>
+#include <algorithm>
+
 
 // Main code
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
@@ -17,27 +19,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         return 1;
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Vocabulary Cracker", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1080, 720, "Vocabulary Cracker", nullptr, nullptr);
     if (window == nullptr)
         return 1;
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    std::unordered_map<std::string, unsigned int> confirmedWords;
+    std::vector<std::pair<std::string, int>> confirmedWords;
 
     std::string input;
     std::ifstream readLog("../VCCore/User Data/Log.txt");
     while (std::getline(readLog, input))
     {
         std::stringstream line(input);
+        std::pair<std::string, int> word;
 
-        std::string word;
-        std::getline(line, word, ' ');
+        std::getline(line, word.first, ' ');
         std::string count;
         std::getline(line, count, ' ');
+        word.second = std::stoi(count);
 
-        confirmedWords[word] = std::stoi(count);
+        confirmedWords.push_back(word);
     }
     readLog.close();
 
@@ -104,7 +107,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         // Main window
         {
             ImGui::Begin("Main", nullptr, basicWindowFlags);
-            ImGui::Text("This is main window text");
+            ImGui::Text("Sorting Options:");
+            ImGui::Separator();
+
+            ImGui::Text("By Count");
+            ImGui::SameLine();
+            if (ImGui::Button("Ascending"))
+            {
+                std::sort(confirmedWords.begin(), confirmedWords.end(), 
+                    [](auto& left, auto& right) 
+                    {
+                        return left.second > right.second;
+                    });
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Descending"))
+            {
+                std::sort(confirmedWords.begin(), confirmedWords.end(),
+                    [](auto& left, auto& right)
+                    {
+                        return left.second < right.second;
+                    });
+            }
 
             ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
 
