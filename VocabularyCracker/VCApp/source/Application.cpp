@@ -2,14 +2,9 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_stdlib.h"
 #include <stdio.h>
 #include <Windows.h>
-
-#include <fstream>
-#include <string>
-#include <unordered_map>
-#include <sstream>
-#include <algorithm>
 
 Application::Application()
 {
@@ -141,6 +136,8 @@ void Application::Update()
         ImGui::End();
     }
 
+    //ImGui::ShowDemoWindow();
+
     // Rendering
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -156,9 +153,10 @@ void Application::Update()
 
 void Application::LogView()
 {
-    ImGui::Text("Sorting Options:");
+    ImGui::Text("Used Words Log");
     ImGui::Separator();
 
+    ImGui::Text("Sorting Options:");
     ImGui::Text("By Count ");
     ImGui::SameLine();
     if (ImGui::Button("Ascending"))
@@ -208,6 +206,44 @@ void Application::LogView()
 void Application::DictionaryView()
 {
     ImGui::Text("Dictionary View");
+    ImGui::Separator();
+
+    if (ImGui::InputTextWithHint("##Search", "Search", &m_SearchInput))
+    {
+        if (m_SearchInput == "")
+        {
+            m_HasSearched = false;
+        }
+        else m_HasSearched = true;
+    }
+    ImGui::SameLine();
+    ImGui::InputInt("Page", &m_DefaultDictionaryCharacter);
+    if (m_DefaultDictionaryCharacter < 1) m_DefaultDictionaryCharacter = 1;
+    else if (m_DefaultDictionaryCharacter > 26) m_DefaultDictionaryCharacter = 26;
+
+    std::vector<std::string> dictionaryWords;
+
+    if (m_HasSearched)
+    {
+        dictionaryWords = m_UserData.GetSearchResultData(m_SearchInput);
+    }
+    else dictionaryWords = m_UserData.GetSingleCharacterData(m_DefaultDictionaryCharacter + 96);
+
+    ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
+
+    if (ImGui::BeginTable("word table", 1, flags))
+    {
+        ImGui::TableSetupColumn("Word", ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableHeadersRow();
+
+        for (auto words : dictionaryWords)
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", words.c_str());
+        }
+        ImGui::EndTable();
+    }
 }
 
 void Application::SettingsView()

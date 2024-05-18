@@ -17,6 +17,9 @@ private:
 	GLFWwindow* m_Window = nullptr;
 
 	UserDataManager m_UserData;
+	int m_DefaultDictionaryCharacter = 1;
+	std::string m_SearchInput;
+	bool m_HasSearched = false;
 
 public:
 	Application();
