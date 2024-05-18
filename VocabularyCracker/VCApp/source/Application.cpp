@@ -98,7 +98,20 @@ void Application::Update()
     // SideBar window
     {
         ImGui::Begin("SideBar", nullptr, basicWindowFlags);
-        ImGui::Text("This is text");
+        
+        if (ImGui::Button("Log View"))
+        {
+            m_State = State::LOGVIEW;
+        }
+        else if (ImGui::Button("Dictionary View"))
+        {
+            m_State = State::DICTIONARYVIEW;
+        }
+        else if (ImGui::Button("Settings"))
+        {
+            m_State = State::SETTINGSVIEW;
+        }
+
         ImGui::End();
     }
 
@@ -143,24 +156,6 @@ void Application::Update()
 
 void Application::LogView()
 {
-    std::vector<std::pair<std::string, int>> confirmedWords;
-
-    std::string input;
-    std::ifstream readLog("../VCCore/User Data/Log.txt");
-    while (std::getline(readLog, input))
-    {
-        std::stringstream line(input);
-        std::pair<std::string, int> word;
-
-        std::getline(line, word.first, ' ');
-        std::string count;
-        std::getline(line, count, ' ');
-        word.second = std::stoi(count);
-
-        confirmedWords.push_back(word);
-    }
-    readLog.close();
-
     ImGui::Text("Sorting Options:");
     ImGui::Separator();
 
@@ -168,41 +163,27 @@ void Application::LogView()
     ImGui::SameLine();
     if (ImGui::Button("Ascending"))
     {
-        std::sort(confirmedWords.begin(), confirmedWords.end(),
-            [](auto& left, auto& right)
-            {
-                return left.second > right.second;
-            });
+        m_UserData.SortLogByCount();
     }
     ImGui::SameLine();
     if (ImGui::Button("Descending"))
     {
-        std::sort(confirmedWords.begin(), confirmedWords.end(),
-            [](auto& left, auto& right)
-            {
-                return left.second < right.second;
-            });
+        m_UserData.SortLogByCount(false);
     }
 
     ImGui::Text("By Length");
     ImGui::SameLine();
     if (ImGui::Button("Ascending##1"))
     {
-        std::sort(confirmedWords.begin(), confirmedWords.end(),
-            [](auto& left, auto& right)
-            {
-                return left.first.length() > right.first.length();
-            });
+        m_UserData.SortLogByLength();
     }
     ImGui::SameLine();
     if (ImGui::Button("Descending##1"))
     {
-        std::sort(confirmedWords.begin(), confirmedWords.end(),
-            [](auto& left, auto& right)
-            {
-                return left.first.length() < right.first.length();
-            });
+        m_UserData.SortLogByLength(false);
     }
+
+    std::vector<std::pair<std::string, int>> confirmedWords = m_UserData.GetLogData();
 
     ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
 
@@ -226,8 +207,10 @@ void Application::LogView()
 
 void Application::DictionaryView()
 {
+    ImGui::Text("Dictionary View");
 }
 
 void Application::SettingsView()
 {
+    ImGui::Text("Settings View");
 }

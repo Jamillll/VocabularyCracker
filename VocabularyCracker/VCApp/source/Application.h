@@ -1,5 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include "UserDataManager.h"
 
 class Application
 {
@@ -14,6 +15,8 @@ private:
 
 	State m_State = State::LOGVIEW;
 	GLFWwindow* m_Window = nullptr;
+
+	UserDataManager m_UserData;
 
 public:
 	Application();
