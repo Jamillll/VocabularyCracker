@@ -216,6 +216,7 @@ void Application::DictionaryView()
     ImGui::Text("Dictionary View");
     ImGui::Separator();
 
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() - 140);
     if (ImGui::InputTextWithHint("##Search", "Search", &m_SearchInput))
     {
         if (m_SearchInput == "")
@@ -228,11 +229,13 @@ void Application::DictionaryView()
         }
         m_UserData.SetDictionarySlice();
     }
+    ImGui::PopItemWidth();
 
     int dictionarySliceCount = m_UserData.GetDictionarySliceCount();
     int& sliceIndex = m_UserData.m_SliceIndex;
 
     ImGui::SameLine();
+    ImGui::PushItemWidth(70);
     std::string pageCountText = "/" + std::to_string(dictionarySliceCount);
     if (ImGui::InputInt(pageCountText.c_str(), &sliceIndex))
     {
