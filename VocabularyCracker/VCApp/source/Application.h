@@ -11,18 +11,15 @@ private:
 		CRASH = -1,
 		LOGVIEW = 0,
 		DICTIONARYVIEW = 1,
-		SETTINGSVIEW = 2,
+		EDITDICTIONARYVIEW = 2,
+		SETTINGSVIEW = 3,
 	};
 
 	State m_State = State::LOGVIEW;
 	GLFWwindow* m_Window = nullptr;
 
 	UserDataManager m_UserData;
-	std::vector<std::string> m_WorkingDictionaryData;
-	std::vector<std::string> m_WorkingDictionaryDataSlice;
-	int m_DefaultDictionaryCharacter = 1;
 	std::string m_SearchInput;
-	bool m_HasSearched = false;
 
 public:
 	Application();
@@ -36,5 +33,6 @@ private:
 
 	void LogView();
 	void DictionaryView();
+	void EditDictionaryView();
 	void SettingsView();
 };

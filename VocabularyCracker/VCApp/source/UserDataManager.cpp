@@ -6,7 +6,7 @@
 
 UserDataManager::UserDataManager()
 {
-    std::string input;
+    std::string input = "";
     std::ifstream readLog("../VCCore/User Data/Log.txt");
     while (std::getline(readLog, input))
     {
@@ -22,13 +22,8 @@ UserDataManager::UserDataManager()
     }
     readLog.close();
 
-    input = "";
-    readLog.open("../VCCore/User Data/words_alpha.txt");
-    while (std::getline(readLog, input))
-    {
-        m_DictionaryWords.push_back(input);
-    }
-    readLog.close();
+    ResetDictionaryData();
+    SetDictionarySlice();
 }
 
 std::vector<std::pair<std::string, int>> UserDataManager::GetLogData()
@@ -70,84 +65,69 @@ void UserDataManager::SortLogByLength(bool isAscending)
         });
 }
 
-std::vector<std::string> UserDataManager::GetFullDictionaryData()
+void UserDataManager::ResetDictionaryData()
 {
-    return m_DictionaryWords;
+    m_SliceIndex = 1;
+
+    std::string input;
+    std::ifstream readLog("../VCCore/User Data/words_alpha.txt");
+    while (std::getline(readLog, input))
+    {
+        m_DictionaryWords.push_back(input);
+    }
+    readLog.close();
 }
 
-std::vector<std::string> UserDataManager::GetSingleCharacterData(char character)
+std::vector<std::string>* UserDataManager::GetDictionaryData()
 {
-    if (character < 'a') character = 'a';
-    else if (character > 'z') character = 'z';
+    return &m_DictionaryWords;
+}
 
-    int vectorStart = -1;
-    int vectorEnd = -1;
+void UserDataManager::SetDictionarySlice()
+{
+    int sliceBegin = m_EntriesPerSlice * (m_SliceIndex - 1);
+    int sliceEnd = m_EntriesPerSlice * m_SliceIndex;
+
+    if (sliceEnd >= m_DictionaryWords.size())
+    {
+        sliceEnd = m_DictionaryWords.size();
+    }
+
+    std::vector<std::string> slice(m_DictionaryWords.begin() + sliceBegin, m_DictionaryWords.begin() + sliceEnd);
+    m_DictionarySlice = slice;
+}
+
+std::vector<std::string>* UserDataManager::GetDictionarySlice()
+{
+    return &m_DictionarySlice;
+}
+
+void UserDataManager::SortDictionaryBySearch(std::string searchInput)
+{
+    m_SliceIndex = 1;
+    std::vector<std::string> filteredResults;
 
     for (size_t i = 0; i < m_DictionaryWords.size(); i++)
     {
-        if (vectorStart == -1)
+        if (m_DictionaryWords[i].find(searchInput) != std::string::npos)
         {
-            if (m_DictionaryWords[i][0] == character)
-            {
-                vectorStart = i;
-                continue;
-            }
-        }
-        else
-        {
-            if (m_DictionaryWords[i][0] != character)
-            {
-                vectorEnd = i;
-                break;
-            }
+            filteredResults.push_back(m_DictionaryWords[i]);
         }
     }
 
-    if (vectorEnd == -1) vectorEnd = m_DictionaryWords.size();
-
-    std::vector<std::string> characterData(m_DictionaryWords.begin() + vectorStart, m_DictionaryWords.begin() + vectorEnd);
-    return characterData;
+    m_DictionaryWords = filteredResults;
 }
 
-std::vector<std::string> UserDataManager::GetSearchResultData(std::string search)
+int UserDataManager::GetDictionarySliceCount()
 {
-    std::vector<std::string> doesContain;
-
-    for (size_t i = 0; i < m_DictionaryWords.size(); i++)
-    {
-        if (m_DictionaryWords[i].find(search) != std::string::npos)
-        {
-            doesContain.push_back(m_DictionaryWords[i]);
-        }
-    }
-
-    return doesContain;
+    // Code off of stack overflow to divide rounding up
+    return (m_DictionaryWords.size() + m_EntriesPerSlice - 1) / m_EntriesPerSlice;
 }
 
 int UserDataManager::ReturnCollectionSliceCount(std::vector<std::string>* collectionToSlice)
 {
     // Code off of stack overflow to divide rounding up
-    return (collectionToSlice->size() + m_EntriesPerPage - 1) / m_EntriesPerPage;
-}
-
-int UserDataManager::ReturnDictionarySliceCount()
-{
-    // Code off of stack overflow to divide rounding up
-    return (m_DictionaryWords.size() + m_EntriesPerPage - 1) / m_EntriesPerPage;
-}
-
-std::vector<std::string> UserDataManager::GetDictionaryDataSlice(std::vector<std::string>* collectionToSlice, int sliceNumber)
-{
-    int sliceBegin = m_EntriesPerPage * (sliceNumber - 1);
-    int sliceEnd = m_EntriesPerPage * sliceNumber;
-
-    if (sliceEnd >= collectionToSlice->size())
-    {
-        sliceEnd = collectionToSlice->size();
-    }
-
-    std::vector<std::string> slice(collectionToSlice->begin() + sliceBegin, collectionToSlice->begin() + sliceEnd);
-    return slice;
+    return (collectionToSlice->size() + m_EntriesPerSlice - 1) / m_EntriesPerSlice;
 }
 
 UserDataManager::~UserDataManager()
