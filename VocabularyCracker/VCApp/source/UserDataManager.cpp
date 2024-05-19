@@ -124,6 +124,32 @@ std::vector<std::string> UserDataManager::GetSearchResultData(std::string search
     return doesContain;
 }
 
+int UserDataManager::ReturnCollectionSliceCount(std::vector<std::string>* collectionToSlice)
+{
+    // Code off of stack overflow to divide rounding up
+    return (collectionToSlice->size() + m_EntriesPerPage - 1) / m_EntriesPerPage;
+}
+
+int UserDataManager::ReturnDictionarySliceCount()
+{
+    // Code off of stack overflow to divide rounding up
+    return (m_DictionaryWords.size() + m_EntriesPerPage - 1) / m_EntriesPerPage;
+}
+
+std::vector<std::string> UserDataManager::GetDictionaryDataSlice(std::vector<std::string>* collectionToSlice, int sliceNumber)
+{
+    int sliceBegin = m_EntriesPerPage * (sliceNumber - 1);
+    int sliceEnd = m_EntriesPerPage * sliceNumber;
+
+    if (sliceEnd >= collectionToSlice->size())
+    {
+        sliceEnd = collectionToSlice->size();
+    }
+
+    std::vector<std::string> slice(collectionToSlice->begin() + sliceBegin, collectionToSlice->begin() + sliceEnd);
+    return slice;
+}
+
 UserDataManager::~UserDataManager()
 {
 }

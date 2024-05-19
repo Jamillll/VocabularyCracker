@@ -32,6 +32,9 @@ Application::Application()
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
+
+    m_WorkingDictionaryData = m_UserData.GetFullDictionaryData();
+    m_WorkingDictionaryDataSlice = m_UserData.GetDictionaryDataSlice(&m_WorkingDictionaryData, m_DefaultDictionaryCharacter);
 }
 
 void Application::Run()
@@ -212,22 +215,28 @@ void Application::DictionaryView()
     {
         if (m_SearchInput == "")
         {
-            m_HasSearched = false;
+            m_WorkingDictionaryData = m_UserData.GetFullDictionaryData();
         }
-        else m_HasSearched = true;
+        else
+        {
+            m_DefaultDictionaryCharacter = 1;
+            m_WorkingDictionaryData = m_UserData.GetSearchResultData(m_SearchInput);
+            m_WorkingDictionaryDataSlice = m_WorkingDictionaryData;
+        }
+
+        m_WorkingDictionaryDataSlice = m_UserData.GetDictionaryDataSlice(&m_WorkingDictionaryData, m_DefaultDictionaryCharacter);
     }
+
+    int dictionarySliceCount = m_UserData.ReturnCollectionSliceCount(&m_WorkingDictionaryData);
+
     ImGui::SameLine();
-    ImGui::InputInt("Page", &m_DefaultDictionaryCharacter);
-    if (m_DefaultDictionaryCharacter < 1) m_DefaultDictionaryCharacter = 1;
-    else if (m_DefaultDictionaryCharacter > 26) m_DefaultDictionaryCharacter = 26;
-
-    std::vector<std::string> dictionaryWords;
-
-    if (m_HasSearched)
+    std::string pageCountText = "/" + std::to_string(dictionarySliceCount);
+    if (ImGui::InputInt(pageCountText.c_str(), &m_DefaultDictionaryCharacter))
     {
-        dictionaryWords = m_UserData.GetSearchResultData(m_SearchInput);
+        if (m_DefaultDictionaryCharacter < 1) m_DefaultDictionaryCharacter = 1;
+        else if (m_DefaultDictionaryCharacter > dictionarySliceCount) m_DefaultDictionaryCharacter = dictionarySliceCount;
+        m_WorkingDictionaryDataSlice = m_UserData.GetDictionaryDataSlice(&m_WorkingDictionaryData, m_DefaultDictionaryCharacter);
     }
-    else dictionaryWords = m_UserData.GetSingleCharacterData(m_DefaultDictionaryCharacter + 96);
 
     ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
 
@@ -236,7 +245,7 @@ void Application::DictionaryView()
         ImGui::TableSetupColumn("Word", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
 
-        for (auto words : dictionaryWords)
+        for (auto words : m_WorkingDictionaryDataSlice)
         {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
